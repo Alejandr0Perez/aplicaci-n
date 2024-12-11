@@ -10,6 +10,20 @@ import Vacantes from './src/screens/Vacantes'; // Importa la nueva pantalla de V
 import DetalleVacante from './src/screens/DetalleVacante';
 import EditarPerfil from './src/screens/EditarPerfil'; // Importa tu nuevo componente
 import NotificationsScreen from './src/screens/NotificationsScreen';
+import CurriculumScreen from './src/screens/CurriculumScreen';
+import FavoritosScreen from './src/screens/FavoritosScreen';
+import RedesSocialesScreen from './src/screens/RedesSocialesScreen';
+import ShareScreen from './src/screens/ShareScreen';
+import AboutScreen from './src/screens/AboutScreen';
+import FAQScreen from './src/screens/FAQScreen';
+import HelpCenterScreen from './src/screens/HelpCenterScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import SubscriptionScreen from './src/screens/SubscriptionScreen';
+import empresa from './src/screens/empresa';
+
+
+
+
 
 
 const Stack = createStackNavigator();
@@ -27,6 +41,24 @@ const App = () => {
         <Stack.Screen name="DetalleVacante" component={DetalleVacante} />
         <Stack.Screen name="EditarPerfil" component={EditarPerfil} />
         <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
+        <Stack.Screen name="CurriculumScreen" component={CurriculumScreen} />
+        <Stack.Screen name="FavoritosScreen" component={FavoritosScreen} />
+        <Stack.Screen name="RedesSocialesScreen" component={RedesSocialesScreen} />
+        <Stack.Screen name="ShareScreen" component={ShareScreen} />
+        <Stack.Screen name="AboutScreen" component={AboutScreen} />
+        <Stack.Screen name="FAQScreen" component={FAQScreen} />
+        <Stack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
+        <Stack.Screen name="empresa" component={empresa} />
+
+
+
+
+
+
+
+
 
 
       </Stack.Navigator>

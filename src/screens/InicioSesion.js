@@ -10,20 +10,26 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importar FontAwesome para el ícono
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const InicioSesion = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
+    // Verificar si el usuario y la contraseña son correctos
     if (username === 'admin' && password === 'admin') {
       console.log('Usuario:', username);
       console.log('Contraseña:', password);
       console.log('Recuérdame:', rememberMe);
-      navigation.navigate('SesionIniciada'); // Cambia a la nueva pantalla
+      navigation.navigate('SesionIniciada'); // Navegar a la vista SesionIniciada para "admin"
+    } else if (username === 'admin1' && password === 'admin1') {
+      console.log('Usuario:', username);
+      console.log('Contraseña:', password);
+      console.log('Recuérdame:', rememberMe);
+      navigation.navigate('empresa'); // Navegar a la vista empresa para "admin1"
     } else {
       Alert.alert('Error', 'Usuario o contraseña incorrectos');
     }

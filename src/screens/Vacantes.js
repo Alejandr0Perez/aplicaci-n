@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, SectionList, Modal, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de instalar esta dependencia
+import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
 
 
 
@@ -92,8 +93,7 @@ const Vacantes = ({ navigation }) => {
           </TouchableOpacity>
         </TouchableOpacity>
         {renderMenuItems()}
-        <Text style={dynamicStyles.menuSectionTitle}>___________</Text>
-        {renderAboutItems()}
+        
       </ScrollView>
     </View>
   );
@@ -105,11 +105,50 @@ const Vacantes = ({ navigation }) => {
         icon: require('./assets/notificaciones.png'), 
         action: () => navigation.navigate('NotificationsScreen') // Navega a la pantalla de notificaciones
       },
-      { text: 'Mi Curriculum', icon: require('./assets/curriculum.png') },
-      { text: 'Favoritos', icon: require('./assets/favoritos.png') },
-      { text: 'Redes Sociales', icon: require('./assets/redes.png') },
-      { text: 'Invita a tus amigos', icon: require('./assets/invita.png') },
+      { text: 'Mi Curriculum', 
+        icon: require('./assets/curriculum.png') ,
+        action: () => navigation.navigate('CurriculumScreen'),
+      },
+      { text: 'Favoritos', 
+        icon: require('./assets/favoritos.png'), 
+        action: () => navigation.navigate('FavoritosScreen'),
+      },
+      { text: 'Redes Sociales', 
+        icon: require('./assets/redes.png'),
+        action: () => navigation.navigate('RedesSocialesScreen'),
+      },
+      { text: 'Invita a tus amigos',
+        icon: require('./assets/invita.png'),
+        action: () => navigation.navigate('ShareScreen'),
+      },
       { text: 'Apariencia', icon: require('./assets/apariencia.png'), action: () => setAppearanceModalVisible(true) },
+      
+      { text: 'Plan Suscripción',
+        icon: require('./assets/estrellaM.png'),
+        action: () => navigation.navigate('SubscriptionScreen'),
+      },
+
+      { 
+        text: '__________________'
+      },
+      
+      { 
+        text: 'Acerca de nosotros', 
+        action: () => navigation.navigate('AboutScreen') // Navega a la pantalla "Acerca de Nosotros"
+      },
+      { 
+        text: 'Preguntas Frecuentes', 
+        action: () => navigation.navigate('FAQScreen') // Navega a la pantalla "Acerca de Nosotros"
+      },
+      { 
+        text: 'Centro de Ayuda', 
+        action: () => navigation.navigate('HelpCenterScreen') // Navega a la pantalla "Acerca de Nosotros"
+      },
+      { 
+        text: 'Ajustes', 
+        action: () => navigation.navigate('SettingsScreen') // Navega a la pantalla "Acerca de Nosotros"
+      }
+  
     ];
 
     return menuItems.map((item, index) => (
@@ -122,10 +161,6 @@ const Vacantes = ({ navigation }) => {
 
   const renderAboutItems = () => {
     const aboutItems = [
-      'Acerca de nosotros',
-      'Preguntas Frecuentes',
-      'Centro de Ayuda',
-      'Ajustes',
     ];
 
     return aboutItems.map((item, index) => (
