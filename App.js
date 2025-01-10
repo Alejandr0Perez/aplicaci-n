@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import InicioSesion from './src/screens/InicioSesion'; // Asegúrate de la ruta correcta
-import Registro from './src/screens/Registro'; // La vista de registro que ya has creado
+import registro from './src/screens/registro'; // La vista de registro que ya has creado
 import Residente from './src/screens/Residente'; // Agrega la vista de residente
 import ConfirmacionCorreo from './src/screens/ConfirmacionCorreo'; // Nueva vista de confirmación de correo
 import SesionIniciada from './src/screens/SesionIniciada';
@@ -33,7 +33,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="InicioSesion">
         <Stack.Screen name="InicioSesion" component={InicioSesion} />
-        <Stack.Screen name="Registro" component={Registro} />
+        <Stack.Screen name="registro" component={registro} />
         <Stack.Screen name="Residente" component={Residente} />
         <Stack.Screen name="ConfirmacionCorreo" component={ConfirmacionCorreo} />
         <Stack.Screen name="SesionIniciada" component={SesionIniciada} />

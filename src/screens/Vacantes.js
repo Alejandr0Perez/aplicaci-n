@@ -1,15 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, SectionList, Modal, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SectionList, Modal, ScrollView,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de instalar esta dependencia
-import { useFocusEffect } from '@react-navigation/native'; // Importa useFocusEffect
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { app } from './firebaseConfig'; // Asegúrate de tener tu configuración de Firebase aquí
 
+const db = getFirestore(app);
 
 
 const Vacantes = ({ navigation }) => {
+  const [vacante, setVacante] = useState({
+    empresa: '',
+    ubicacion: '',
+    horario: '',
+    carreras: '',
+    actividad: '',
+    espacio: '',
+    prestaciones: '',
+    requisitos: '',
+    masInformacion: '',
+  });
   const [darkTheme, setDarkTheme] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [appearanceModalVisible, setAppearanceModalVisible] = useState(false);
   const [favoritos, setFavoritos] = useState({});
+  const handleInputChange = (field, value) => {
+    setVacante({ ...vacante, [field]: value });
+  };
+
+  const guardarVacante = async () => {
+    try {
+      await addDoc(collection(db, 'vacantes'), vacante);
+      Alert.alert('Vacante guardada', 'La vacante se ha guardado correctamente.');
+      setModalVisible(false);
+      setVacante({
+        empresa: '',
+        ubicacion: '',
+        horario: '',
+        carreras: '',
+        actividad: '',
+        espacio: '',
+        prestaciones: '',
+        requisitos: '',
+        masInformacion: '',
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Hubo un problema al guardar la vacante.');
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const loadPreferences = async () => {
@@ -180,6 +218,9 @@ const Vacantes = ({ navigation }) => {
       <View style={dynamicStyles.header}>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image source={require('./assets/icono.png')} style={dynamicStyles.menuIcon} />
+          style={styles.addButton}
+        onPress={() => setModalVisible(true)}
+        <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
         <Text style={dynamicStyles.resiworkText}>Resiwork®</Text>
       </View>
@@ -202,6 +243,75 @@ const Vacantes = ({ navigation }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
+         <ScrollView style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Agregar Vacante</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Empresa"
+            value={vacante.empresa}
+            onChangeText={(text) => handleInputChange('empresa', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Ubicación"
+            value={vacante.ubicacion}
+            onChangeText={(text) => handleInputChange('ubicacion', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Horario"
+            value={vacante.horario}
+            onChangeText={(text) => handleInputChange('horario', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Carreras (separadas por comas)"
+            value={vacante.carreras}
+            onChangeText={(text) => handleInputChange('carreras', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Actividad"
+            value={vacante.actividad}
+            onChangeText={(text) => handleInputChange('actividad', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Espacio"
+            value={vacante.espacio}
+            onChangeText={(text) => handleInputChange('espacio', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Prestaciones"
+            value={vacante.prestaciones}
+            onChangeText={(text) => handleInputChange('prestaciones', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Requisitos"
+            value={vacante.requisitos}
+            onChangeText={(text) => handleInputChange('requisitos', text)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Más información"
+            value={vacante.masInformacion}
+            onChangeText={(text) => handleInputChange('masInformacion', text)}
+          />
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={guardarVacante}
+          >
+            <Text style={styles.saveButtonText}>Guardar Vacante</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+        </ScrollView>
         <View style={dynamicStyles.modalBackground}>
           <View style={dynamicStyles.modalContainer}>
             <TouchableOpacity style={dynamicStyles.closeButton} onPress={() => setModalVisible(false)}>
@@ -245,6 +355,61 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 20,
     backgroundColor: 'transparent', // Cambiar a transparente para ver la imagen de fondo
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    elevation: 5,
+  },
+  addButtonText: {
+    fontSize: 30,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+  },
+  saveButton: {
+    backgroundColor: '#28A745',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  cancelButton: {
+    backgroundColor: '#DC3545',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
   backgroundImage: {
     position: 'absolute',

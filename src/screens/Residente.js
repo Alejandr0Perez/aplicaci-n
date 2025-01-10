@@ -8,6 +8,9 @@ import {
   ImageBackground,
   Alert,
 } from 'react-native';
+import { auth, db } from './firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
 
 const Residente = ({ navigation }) => {
   const [form, setForm] = useState({
@@ -17,63 +20,66 @@ const Residente = ({ navigation }) => {
     password: '',
     confirmPassword: '',
   });
-  
-  const [termsAccepted, setTermsAccepted] = useState(false); // Estado para los términos aceptados
+
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { username, email, phone, password, confirmPassword } = form;
 
-    // Validar campos vacíos
+    // Validaciones
     if (!username || !email || !phone || !password || !confirmPassword) {
       Alert.alert('Por favor completa todos los campos.');
       return;
     }
 
-    // Validar formato del correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert('Por favor ingresa un correo válido.');
       return;
     }
 
-    // Validar longitud del teléfono (mínimo 10 dígitos)
     if (phone.length < 10) {
       Alert.alert('El teléfono debe tener al menos 10 dígitos.');
       return;
     }
 
-    // Validar longitud de la contraseña (mínimo 8 caracteres)
     if (password.length < 8) {
       Alert.alert('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
 
-    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       Alert.alert('Las contraseñas no coinciden.');
       return;
     }
 
-    // Validar si se aceptaron los términos y condiciones
     if (!termsAccepted) {
       Alert.alert('Debes aceptar los términos y condiciones.');
       return;
     }
 
-    // Aquí iría la lógica para manejar el registro del residente
-    console.log('Usuario:', username);
-    console.log('Correo:', email);
-    console.log('Teléfono:', phone);
-    console.log('Contraseña:', password);
+    // Registro en Firebase
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    // Navegar a la vista de confirmación de correo
-    navigation.navigate('ConfirmacionCorreo');
+      await setDoc(doc(db, 'users', user.uid), {
+        username,
+        email,
+        phone,
+      });
+
+      Alert.alert('Usuario registrado exitosamente');
+      navigation.navigate('ConfirmacionCorreo');
+    } catch (error) {
+      Alert.alert('Error al registrar', error.message);
+    }
   };
-  
+
   return (
     <ImageBackground
       source={require('./assets/imagenF.jpeg')} // Ajusta la ruta de la imagen
@@ -166,14 +172,14 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: 'bold',
     alignSelf: 'center',
-    color: '#00ace6', // Azul
+    color: '#00ace6',
     marginBottom: 10,
   },
   subTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     alignSelf: 'center',
-    color: '#d3d3d3', // Gris
+    color: '#d3d3d3',
     marginBottom: 20,
   },
   input: {

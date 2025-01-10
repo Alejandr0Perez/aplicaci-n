@@ -11,6 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { auth } from './firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const InicioSesion = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -18,20 +20,26 @@ const InicioSesion = ({ navigation }) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    // Verificar si el usuario y la contraseña son correctos
-    if (username === 'admin' && password === 'admin') {
-      console.log('Usuario:', username);
-      console.log('Contraseña:', password);
-      console.log('Recuérdame:', rememberMe);
-      navigation.navigate('SesionIniciada'); // Navegar a la vista SesionIniciada para "admin"
-    } else if (username === 'admin1' && password === 'admin1') {
-      console.log('Usuario:', username);
-      console.log('Contraseña:', password);
-      console.log('Recuérdame:', rememberMe);
-      navigation.navigate('empresa'); // Navegar a la vista empresa para "admin1"
-    } else {
-      Alert.alert('Error', 'Usuario o contraseña incorrectos');
+  // Manejo del inicio de sesión con Firebase
+  const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert('Error', 'Por favor completa todos los campos');
+      return;
+    }
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const user = userCredential.user;
+      console.log('Usuario logueado:', user.email);
+      Alert.alert('Inicio de sesión exitoso');
+      navigation.navigate('SesionIniciada'); // Redirigir a la pantalla de sesión iniciada
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert('Error', 'Usuario no encontrado');
+      } else if (error.code === 'auth/wrong-password') {
+        Alert.alert('Error', 'Contraseña incorrecta');
+      } else {
+        Alert.alert('Error', 'Ocurrió un problema, inténtalo más tarde');
+      }
     }
   };
 
@@ -40,7 +48,7 @@ const InicioSesion = ({ navigation }) => {
   };
 
   const handleForgotPassword = () => {
-    console.log('Olvidé mi contraseña');
+    Alert.alert('Funcionalidad en construcción', 'Por favor, contacta al administrador.');
   };
 
   return (
@@ -56,14 +64,17 @@ const InicioSesion = ({ navigation }) => {
         <Text style={styles.brand}>ResiWork®</Text>
         <Text style={styles.title}>Entrar</Text>
 
+        {/* Campo de usuario */}
         <TextInput
           style={styles.input}
-          placeholder="Nombre de Usuario"
+          placeholder="Correo electrónico"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
+          keyboardType="email-address"
         />
 
+        {/* Campo de contraseña con visibilidad controlada */}
         <View style={styles.passwordContainer}>
           <TextInput
             style={styles.passwordInput}
@@ -77,6 +88,7 @@ const InicioSesion = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Switch de "Recuérdame" */}
         <View style={styles.rememberMeContainer}>
           <Switch
             value={rememberMe}
@@ -85,10 +97,12 @@ const InicioSesion = ({ navigation }) => {
           <Text style={styles.rememberMeText}>Recuérdame</Text>
         </View>
 
+        {/* Botón de iniciar sesión */}
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
+        {/* Opciones adicionales */}
         <TouchableOpacity onPress={handleForgotPassword}>
           <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
         </TouchableOpacity>
@@ -103,7 +117,9 @@ const InicioSesion = ({ navigation }) => {
   );
 };
 
-// Estilos
+export default InicioSesion;
+
+// Estilos del componente
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
@@ -151,10 +167,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 15,
     backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 2,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -169,10 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 15,
     backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 2,
   },
   rememberMeContainer: {
     flexDirection: 'row',
@@ -190,10 +198,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
   },
   buttonText: {
     color: '#fff',
@@ -216,5 +220,3 @@ const styles = StyleSheet.create({
     color: '#00ace6',
   },
 });
-
-export default InicioSesion;

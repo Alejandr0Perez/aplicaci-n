@@ -1,24 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
+import database from '@react-native-firebase/database'; // Importa Firebase Database
 
 const EditarPerfil = ({ navigation }) => {
-  const [nombre, setNombre] = useState('Juan Pérez');
-  const [email, setEmail] = useState('juan.perez@example.com');
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [carrera, setCarrera] = useState('');
+  const [userId, setUserId] = useState('');  // Agregar un estado para el userId
 
-  const handleSave = () => {
+  useEffect(() => {
+    // Recuperar los datos desde Firebase cuando el componente se monta
+    const loadUserData = async () => {
+      try {
+        // Obtener el userId dinámicamente (puede ser obtenido desde autenticación o navegación)
+        const userId = '123'; // Esto debe ser dinámico, depende de la autenticación
+        setUserId(userId); // Establecer el userId
+
+        const snapshot = await database().ref(`/usuarios/${userId}`).once('value');
+        const userData = snapshot.val();
+        
+        if (userData) {
+          setNombre(userData.nombre);
+          setEmail(userData.email);
+          setPassword(userData.password);
+        }
+      } catch (error) {
+        console.log('Error al cargar los datos desde Firebase:', error);
+      }
+    };
+
+    loadUserData();
+  }, []); // Solo se ejecuta una vez cuando el componente se monta
+
+  const handleSave = async () => {
     // Validaciones simples
-    if (!nombre || !email || !carrera) {
+    if (!nombre || !email) {
       Alert.alert('Error', 'Por favor completa todos los campos requeridos.');
       return;
     }
 
-    // Simula el guardado de información
-    console.log('Información guardada:', { nombre, email, password, carrera });
-    
-    // Navega a Vacantes después de guardar
-    navigation.navigate('Vacantes', { nombre, email, carrera });
+    // Actualizar los datos en Firebase
+    try {
+      if (!userId) {
+        throw new Error('User ID no encontrado');
+      }
+
+      await database().ref(`/usuarios/${userId}`).update({
+        nombre: nombre,
+        email: email,
+        password: password,
+      });
+
+      Alert.alert('Éxito', 'Los datos se han guardado correctamente.');
+
+      // Navegar a la página de Vacantes después de guardar
+      navigation.navigate('Vacantes', { nombre, email });
+
+    } catch (error) {
+      console.log('Error al guardar los datos en Firebase:', error);
+      Alert.alert('Error', 'Hubo un problema al guardar los datos.');
+    }
   };
 
   return (
@@ -55,12 +96,6 @@ const EditarPerfil = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Carrera Universitaria"
-        value={carrera}
-        onChangeText={setCarrera}
-      />
 
       {/* Botón para guardar cambios */}
       <Button title="Guardar Cambios" onPress={handleSave} color="#007BFF" />
@@ -73,10 +108,6 @@ const EditarPerfil = ({ navigation }) => {
       <View style={styles.infoContainer}>
         <Text style={styles.infoTitle}>Email:</Text>
         <Text style={styles.infoText}>{email}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoTitle}>Carrera:</Text>
-        <Text style={styles.infoText}>{carrera}</Text>
       </View>
     </ScrollView>
   );

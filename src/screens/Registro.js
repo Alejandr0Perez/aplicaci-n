@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,35 @@ import {
   StyleSheet,
   ImageBackground,
   Image,
+  TextInput
 } from 'react-native';
 
 const Registro = ({ navigation }) => {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [carrera, setCarrera] = useState('');
+
   const handleResidente = () => {
-    console.log('Registro como Residente'); // Verifica que se llama
-    navigation.navigate('Residente'); // Navega a la pantalla de Residente
+    if (!nombre || !email || !carrera || !password) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
+
+    console.log('Registro como Residente');
+    // Navega a la pantalla de Residente y pasa los datos
+    navigation.navigate('Residente', { nombre, email, password, carrera });
   };
 
   const handleEmpresa = () => {
+    if (!nombre || !email || !carrera || !password) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
+
     console.log('Registro como Empresa');
-    navigation.navigate('Empresa');
+    // Navega a la pantalla de Empresa y pasa los datos
+    navigation.navigate('Empresa', { nombre, email, password, carrera });
   };
 
   return (
@@ -31,7 +49,34 @@ const Registro = ({ navigation }) => {
         />
         <Text style={styles.brand}>ResiWork®</Text>
         <Text style={styles.title}>REGISTRO</Text>
-        <Text style={styles.subtitle}>Selecciona la opción que te corresponde...</Text>
+        <Text style={styles.subtitle}>Completa tu información...</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre"
+          value={nombre}
+          onChangeText={setNombre}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Correo Electrónico"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Carrera Universitaria"
+          value={carrera}
+          onChangeText={setCarrera}
+        />
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.optionButton} onPress={handleResidente}>
@@ -97,6 +142,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     alignSelf: 'center',
     marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    width: '100%',
+    backgroundColor: '#fff',
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',
